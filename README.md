@@ -1,2 +1,2 @@
-# 20180423_softrenderer
-메쉬작성 과제
+# SoftRenderer
+소프트렌더러 제작용 템플릿
