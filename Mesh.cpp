@@ -5,45 +5,52 @@
 #include "Mesh.h"
 #include "Triangle.h"
 
-
-Mesh::Mesh()
+Mesh::~Mesh()
 {
-	vertices = 0;
-	index = 0;
-	indexSize = 0;
+	if (NULL != vertices)
+	{
+		delete[] vertices;
+		vertices = NULL;
+	}
+
+	if (NULL != Indices)
+	{
+		delete[] Indices;
+		Indices = NULL;
+	}
 }
 
 void Mesh::initialize()
 {
-	vertices = 0;
-	index = 0;
-	indexSize = 0;
+	vertices = NULL;
+	Indices = NULL;
+	ISize = 0;
 }
 
-void Mesh::setVerts(Vertex *vert, int indexPool)
+void Mesh::setVerts(Vertex *vert, size_t indexPool)
 {
 	
 	initialize();// 초기화
 
 	vertices = vert;
-	indexSize = indexPool;
-	index = new int[indexSize];
+	ISize = indexPool;
+	Indices = new int[ISize];
 
-	for (int i = 0; i < indexSize; i++)
+	for (int i = 0; i < ISize; i++)
 	{
-		index[i] = i;
+		Indices[i] = i;
 	}
 }
 
 void Mesh::Draw()
 {
-	for (int i = 0; i < indexSize; i += 3)// 3번마다 반복
+	for (int i = 0; i < ISize; i += 3)// 3번마다 반복
 	{
 		Vertex vert[3];
 		
-		vert[0] = vertices[index[i]];
-		vert[1] = vertices[index[i + 1]];
-		vert[2] = vertices[index[i + 2]];
+		vert[0] = vertices[Indices[i]];
+		vert[1] = vertices[Indices[i + 1]];
+		vert[2] = vertices[Indices[i + 2]];
 
 		Triangle primitive(vert[0], vert[1], vert[2]);
 

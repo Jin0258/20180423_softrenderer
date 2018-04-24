@@ -26,6 +26,59 @@ void PutPixel(IntPoint pt)
 	*(dest + offset) = g_CurrentColor;
 }
 
+void DrawCall(Mesh * MeshToDraw)
+{
+	VertexToFragment* v2f = new VertexToFragment[MeshToDraw->VSize];
+
+	for (int i = 0; i < MeshToDraw->VSize; i++)
+	{
+		Vertex v = MeshToDraw->vertices[i];
+		VertexDATA vdata;
+		vdata.position = v.position;
+		vdata.color = v.color;
+		vdata.uv = v.uv;
+		v2f[i] = VertexShader(vdata);
+	}
+
+	for (int i = 0; i < MeshToDraw->ISize; i++)
+	{
+		Triangle t(v2f[MeshToDraw->Indices[i]],
+			v2f[MeshToDraw->Indices[++i]],
+			v2f[MeshToDraw->Indices[++i]]);
+
+		// Rasterization
+		for (int y = t.Min.Y; y <= t.Max.Y; y++)
+		{
+			for (int x = t.Min.X; x <= t.Max.X; x++)
+			{
+				Vector3 target((float)x + 0.5f, (float)y + 0.5f, 0.0f);
+				float outS, outT;
+				t.CalcBaryCentricCoord(target, &outS, &outT);
+				if (t.IsInTrianble(outS, outT))
+				{
+					VertexToFragment v2f;
+					v2f.position = t.GetFragmentPos(target, outS, outT);
+					v2f.color = t.GetFragmentColor(target, outS, outT);
+					v2f.uv = t.GetFragmentUV(target, outS, outT);
+					ULONG finalColor = FragmentShader(v2f);
+					g_CurrentColor = finalColor;
+					PutPixel(IntPoint(x, y));
+				}
+			}
+		}
+	}
+}
+
+VertexToFragment VertexShader(VertexDATA in)
+{
+	return VertexToFragment();
+}
+
+ULONG FragmentShader(VertexToFragment in)
+{
+	return 0;
+}
+
 void DrawLine(const Vector3& start, const Vector3& end)
 {
 	float length = (end - start).Dist();
@@ -86,6 +139,15 @@ void UpdateFrame(void)
 	if (GetAsyncKeyState(VK_DOWN)) angle -= 1.0f;
 	if (GetAsyncKeyState(VK_PRIOR)) scale *= 1.01f;
 	if (GetAsyncKeyState(VK_NEXT)) scale *= 0.99f;
+
+	/*Mesh *m= new Mesh()
+	DrawCall(m);*/
+
+
+
+
+
+
 
 	Matrix3 TMat, RMat, SMat;
 	TMat.SetTranslation(offsetX, 0.0f);

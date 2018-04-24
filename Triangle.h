@@ -1,23 +1,27 @@
 #pragma once
 
 #include "stdafx.h"
-#include "Vector.h"
+#include "Vertex.h"
 
-struct Vertex
+struct VertexDATA
 {
-public:
-	Vertex() {}
-	Vertex(Vector3 v) { position = v; }
+	VertexDATA() {}
 	Vector3 position;
-	ULONG color;
 	Vector2 uv;
+	ULONG color;
 };
 
+struct VertexToFragment
+{
+	Vector3 position;
+	Vector2 uv;
+	ULONG color;
+};
 struct Triangle
 {
 public:
 	Triangle() {}
-	Triangle(Vertex vert1, Vertex vert2, Vertex vert3)
+	Triangle(VertexToFragment vert1, VertexToFragment vert2, VertexToFragment vert3)
 	{
 		vt[0] = vert1;
 		vt[1] = vert2;
@@ -48,7 +52,7 @@ public:
 		Max.Y = RoundToInt(sbbMax.Y);
 	}
 
-	Vertex vt[3];
+	VertexToFragment vt[3];
 
 	Vector2 u;
 	Vector2 v;
